@@ -1,0 +1,32 @@
+name: interview_answer_controller
+description: interview answer controller
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+version: 1.0.0+1
+
+environment:
+  sdk: '>=2.18.4 <3.0.0'
+
+dependencies:
+  video_player_dart_vlc: ^0.1.3
+  dart_vlc: ^0.4.0
+  flutter_meedu_videoplayer: ^3.1.2
+  flutter:
+    sdk: flutter
+  provider: ^6.0.4
+  drift: ^2.3.0
+  sqlite3_flutter_libs: ^0.5.0
+  cupertino_icons: ^1.0.2
+  path_provider: ^2.0.11
+  file_picker: ^5.2.5
+
+dev_dependencies:
+  flutter_lints: ^2.0.0
+  build_runner: ^2.3.2
+  drift_dev: ^2.3.2
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/
