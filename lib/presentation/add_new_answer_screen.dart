@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import '../data/tools/navigation_tool.dart';
+import '../data/tools/theme_tool.dart';
 import '../domain/answer.dart';
 import 'my_widgets/MyWidgetButton.dart';
 
@@ -53,6 +53,7 @@ class AddNewQuestScreen extends StatelessWidget {
                             myControllerTitle.text);
                         ToolNavigator.pop();
                       },
+                      decoration: ToolTheme.textFieldDecoration,
                       controller: myControllerTitle,
                       textAlign: TextAlign.center,
                       placeholder: "Title",
@@ -76,6 +77,7 @@ class AddNewQuestScreen extends StatelessWidget {
                               myControllerTitle.text);
                           ToolNavigator.pop();
                         },
+                        decoration: ToolTheme.textFieldDecoration,
                         maxLines: null,
                         autofocus: true,
                         controller: myControllerAnswerQuest,

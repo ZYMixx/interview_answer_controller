@@ -14,7 +14,6 @@ class AnswerScreenViewModel extends ChangeNotifier {
   }
 
   static AnswerScreenViewModel? _instance;
-
   static Subject? _instanceSubject;
 
   static AnswerScreenViewModel initInstance(Subject subject) {
@@ -28,45 +27,43 @@ class AnswerScreenViewModel extends ChangeNotifier {
     super.dispose();
   }
 
-  DaoAppDatabase dao = DaoAppDatabase();
   List<Answer> answerList = [];
+  final DaoAppDatabase _dao = DaoAppDatabase();
   String _subjectTitle = "";
 
   AnswerScreenViewModel(Subject subject) {
-    print('CREATE VM');
     _instanceSubject = subject;
     _subjectTitle = subject.title;
     updateAnswerList();
   }
 
   updateAnswerList() async {
-    //answerList = await dao.getAllAnswerOrderByPosition();
-    answerList = await dao.getAllAnswerWhereSubject(_subjectTitle);
+    answerList = await _dao.getAllAnswerWhereSubject(_subjectTitle);
     notifyListeners();
   }
 
   addReadyAnswer(Answer answer) async {
-    await dao.insertAnswer(answer);
+    await _dao.insertAnswer(answer);
     updateAnswerList();
   }
 
   addAnswer(String answerQuest, String subjectTitle, String? title) async {
     Answer answer;
     if (answerList.isEmpty) {
-      answer =
-          Answer(title: answerQuest, position: 0, subjectTitle: subjectTitle);
+      answer = Answer(
+          title: title,
+          questText: answerQuest,
+          position: 0,
+          subjectTitle: subjectTitle);
       answer.position = 0;
     } else {
-      print(
-          'answerList.last ${answerList.last.title} ${answerList.last.position} ${subjectTitle}');
       answer = Answer(
           questText: answerQuest,
           title: title,
           position: answerList.last.position + 1,
           subjectTitle: subjectTitle);
     }
-    print('LaunchScreenViewModel.addAnswer ${answer.title} ${answer.position}');
-    await dao.insertAnswer(answer);
+    await _dao.insertAnswer(answer);
     updateAnswerList();
   }
 
@@ -79,18 +76,18 @@ class AnswerScreenViewModel extends ChangeNotifier {
     }
     answerList.asMap().forEach((index, subj) {
       subj.position = index;
-      dao.updateAnswer(subj);
+      _dao.updateAnswer(subj);
     });
     updateAnswerList();
   }
 
   editAnswer(Answer oldAnswer) {
-    dao.updateAnswer(oldAnswer);
+    _dao.updateAnswer(oldAnswer);
     updateAnswerList();
   }
 
   deleteVideoPath(Answer answer) {
-    dao.deleteAnswerVideoPathFromDb(answer);
+    _dao.deleteAnswerVideoPathFromDb(answer);
     updateAnswerList();
   }
 
@@ -109,15 +106,8 @@ class AnswerScreenViewModel extends ChangeNotifier {
 
   deleteAnswer(Answer answer) async {
     _deleteAllAnswerFiles(answer);
-    await dao.deleteAnswer(answer);
+    await _dao.deleteAnswer(answer);
     updateAnswerList();
-  }
-
-  clearDb() async {
-    List list = await dao.getAllAnswer();
-    for (var sub in list) {
-      await dao.deleteAnswer(sub);
-    }
   }
 
   addNewVideoPath(Answer answer) async {
@@ -128,7 +118,6 @@ class AnswerScreenViewModel extends ChangeNotifier {
       fileName = fileName.replaceAll(':', '-');
       String newFilePath =
           ToolFilePicker.saveVideoFileToUserFolder(filePath!, fileName);
-      print('answer not null ${answer.fileList != null}');
       answer.videoPath = newFilePath;
       answer.dateTime = dateTime;
       editAnswer(answer);

@@ -14,24 +14,22 @@ class LaunchScreenViewModel extends ChangeNotifier {
     super.dispose();
   }
 
-  DaoAppDatabase dao = DaoAppDatabase();
+  DaoAppDatabase _dao = DaoAppDatabase();
   List<Subject> subjectList = [];
 
   LaunchScreenViewModel() {
-    print('CREATE VM');
     updateSubjectList();
   }
 
   updateSubjectList() async {
-    subjectList = await dao.getAllSubjectOrderByPosition();
+    subjectList = await _dao.getAllSubjectOrderByPosition();
     _updateSubjectData();
     notifyListeners();
-    print('NOTIFY ALL');
   }
 
   _updateSubjectData() async {
     for (var subject in subjectList) {
-      var list = await dao.getAllAnswerWhereSubject(subject.title);
+      var list = await _dao.getAllAnswerWhereSubject(subject.title);
       subject.questCount = list.length;
       list.removeWhere((element) => element.videoPath != null);
       subject.undoneQuest = list.length;
@@ -39,18 +37,14 @@ class LaunchScreenViewModel extends ChangeNotifier {
   }
 
   addSubject(String title) async {
-    Subject subjct;
+    Subject subject;
     if (subjectList.isEmpty) {
-      subjct = Subject(title: title, position: 0);
-      subjct.position = 0;
+      subject = Subject(title: title, position: 0);
+      subject.position = 0;
     } else {
-      print(
-          'subjectList.last ${subjectList.last.title} ${subjectList.last.position}');
-      subjct = Subject(title: title, position: subjectList.last.position + 1);
+      subject = Subject(title: title, position: subjectList.last.position + 1);
     }
-    print(
-        'LaunchScreenViewModel.addSubject ${subjct.title} ${subjct.position}');
-    await dao.insertSubject(subjct);
+    await _dao.insertSubject(subject);
     updateSubjectList();
   }
 
@@ -63,26 +57,25 @@ class LaunchScreenViewModel extends ChangeNotifier {
     }
     subjectList.asMap().forEach((index, subj) {
       subj.position = index;
-      dao.simpleUpdateAnswer(subj);
-      print('end work');
+      _dao.simpleUpdateAnswer(subj);
     });
     updateSubjectList();
   }
 
   editSubject(Subject oldSubject) async {
-    await dao.updateSubjectTitle(oldSubject);
+    await _dao.updateSubjectTitle(oldSubject);
     updateSubjectList();
   }
 
   deleteSubject(Subject subject) async {
-    await dao.deleteSubject(subject);
+    await _dao.deleteSubject(subject);
     updateSubjectList();
   }
 
   clearDb() async {
-    List list = await dao.getAllSubject();
+    List list = await _dao.getAllSubject();
     for (var sub in list) {
-      await dao.deleteSubject(sub);
+      await _dao.deleteSubject(sub);
     }
   }
 }

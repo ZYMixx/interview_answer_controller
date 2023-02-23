@@ -1,26 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:interview_answer_controller/presentation/answer_list_screen.dart';
-import 'package:interview_answer_controller/presentation/my_widgets/MyWidgetButton.dart';
 import 'package:interview_answer_controller/presentation/view_models/launch_screen_view_model.dart';
 import 'package:provider/provider.dart';
 
 import '../data/tools/navigation_tool.dart';
+import '../data/tools/theme_tool.dart';
 import '../domain/subject.dart';
-import 'alert_ask_sure_delete.dart';
+import 'my_widgets/alert_ask_sure_delete.dart';
 import 'my_widgets/MyWidgetShortAddText.dart';
 
 late LaunchScreenViewModel _viewModel;
 
 class LaunchScreen extends StatelessWidget {
-  LaunchScreen({Key? key}) : super(key: key);
+  const LaunchScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     _viewModel = LaunchScreenViewModel.instance;
     return ChangeNotifierProvider(
       create: ((context) => _viewModel),
-      child: const Scaffold(
-        body: SubjectListView(),
+      child: Scaffold(
+        body: Container(
+          decoration: ToolTheme.bgBoxDecoration,
+          child: const SubjectListView(),
+        ),
       ),
     );
   }
@@ -36,10 +39,9 @@ class SubjectListView extends StatelessWidget {
     var subjectList =
         context.select((LaunchScreenViewModel vm) => vm.subjectList);
     return ReorderableListView.builder(
-      footer: getAddItemButton(jumpToCreateSubjectScreen),
+      footer: addSubjectButton(jumpToCreateSubjectScreen),
       itemCount: subjectList.length,
       onReorder: (oldItem, newItem) {
-        print('oldItem: $oldItem newItem: $newItem');
         _viewModel.swapSubject(subjectList[oldItem], newItem);
       },
       itemBuilder: (BuildContext context, int index) {
@@ -52,9 +54,9 @@ class SubjectListView extends StatelessWidget {
   }
 }
 
-Widget getAddItemButton(VoidCallback jumpFunction) {
+Widget addSubjectButton(VoidCallback jumpFunction) {
   return Card(
-    color: Colors.green,
+    color: ToolTheme.addSubjectColor,
     child: SizedBox(
       height: 70,
       child: InkWell(
@@ -66,7 +68,7 @@ Widget getAddItemButton(VoidCallback jumpFunction) {
               child: Center(
                 child: Icon(
                   Icons.add,
-                  size: 35,
+                  size: 36,
                 ),
               ),
             ),
@@ -86,11 +88,18 @@ class SubjectBlock extends StatelessWidget {
   final Subject subject;
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Card(
-        color: Colors.purple.withOpacity(0.7),
-        child: SizedBox(
-          height: 150,
+    return Card(
+      elevation: 3,
+      color: ToolTheme.subjectColor,
+      child: SizedBox(
+        height: 150,
+        child: Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage("assets/bg_texture.png"),
+                repeat: ImageRepeat.repeat,
+                opacity: 0.3),
+          ),
           child: InkWell(
             onTap: () {
               jumpToAnswerList(subject);
@@ -103,8 +112,8 @@ class SubjectBlock extends StatelessWidget {
                   fit: FlexFit.tight,
                   child: Center(
                     child: Text(
-                      "${subject.title}",
-                      style: const TextStyle(fontSize: 22, shadows: [
+                      subject.title,
+                      style: const TextStyle(fontSize: 26, shadows: [
                         Shadow(
                             blurRadius: 6, color: Color.fromARGB(60, 0, 0, 0))
                       ]),
@@ -157,8 +166,6 @@ class SubjectBlock extends StatelessWidget {
                             ),
                           ),
                         ]),
-                    // text: "Quests: ${subject.questCount} \n Undone: ${subject.undoneQuest}",
-                    // style: TextStyle(fontSize: 22),
                   ),
                 ),
                 createVerticalDivider(),
@@ -213,19 +220,10 @@ class SubjectBlock extends StatelessWidget {
                         ),
                       ],
                     ),
-                    // child: Column(
-                    //   children: [
-                    //     InkWell(
-                    //       onTap: () {
-                    //         jumpToEditSubjectScreen(subject);
-                    //       },
-                    //     ),
-                    //   ],
-                    // ),
                   ),
                 ),
                 const VerticalDivider(
-                  color: Colors.green,
+                  color: ToolTheme.answerColor,
                   indent: 10,
                   endIndent: 10,
                   width: 60,
@@ -240,7 +238,7 @@ class SubjectBlock extends StatelessWidget {
 
   VerticalDivider createVerticalDivider() {
     return const VerticalDivider(
-      color: Colors.green,
+      color: ToolTheme.answerColor,
       indent: 10,
       endIndent: 10,
     );
@@ -248,7 +246,6 @@ class SubjectBlock extends StatelessWidget {
 }
 
 jumpToAnswerList(Subject subject) {
-  print("SUMN");
   ToolNavigator.set(AnswerListScreen(answerSubject: subject));
 }
 

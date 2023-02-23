@@ -8,6 +8,7 @@ import 'package:interview_answer_controller/presentation/answer_list_screen.dart
 import 'package:interview_answer_controller/presentation/view_models/answer_screen_view_model.dart';
 import '../data/tools/file_picker.dart';
 import '../data/tools/navigation_tool.dart';
+import '../data/tools/theme_tool.dart';
 import '../domain/answer.dart';
 import 'my_widgets/MyWidgetButton.dart';
 
@@ -114,6 +115,7 @@ class _AddNewFilesScreenState extends State<AddNewFilesScreen> {
                               .call(myControllerAnswer.text, filePath);
                           ToolNavigator.pop();
                         },
+                        decoration: ToolTheme.textFieldDecoration,
                         maxLines: null,
                         autofocus: true,
                         controller: myControllerAnswer,
@@ -199,11 +201,10 @@ class _AddNewFilesScreenState extends State<AddNewFilesScreen> {
                   await ToolFilePicker.choseImageFile();
               if (filePathList != null) {
                 var number = 0;
-                for (var path in filePathList!) {
+                for (var path in filePathList) {
                   String fileName =
                       "${answer.subjectTitle}_${answer.id}_${number.toString()}_${DateTime.now()}";
                   number++;
-                  print(fileName);
                   fileName = fileName.replaceAll(':', '-');
                   String newFilePath =
                       ToolFilePicker.saveImgFileToUserFolder(path!, fileName);

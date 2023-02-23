@@ -31,7 +31,7 @@ class ToolNavigator {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => widget,
       barrierDismissible: true,
-      opaque: false, //при true нижний экран через какое-то время удаляется
+      opaque: false,
       transitionDuration: const Duration(milliseconds: 100),
       reverseTransitionDuration: const Duration(milliseconds: 100),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {

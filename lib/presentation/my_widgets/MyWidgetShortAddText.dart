@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../data/tools/navigation_tool.dart';
+import '../../data/tools/theme_tool.dart';
 import 'MyWidgetButton.dart';
 
 class MyWidgetShortAddText extends StatelessWidget {
@@ -18,7 +19,6 @@ class MyWidgetShortAddText extends StatelessWidget {
     if (hint != null) {
       myController.text = hint!;
     }
-    print('BUILD');
     return Scaffold(
       backgroundColor: const Color.fromRGBO(0, 0, 0, 0.35),
       body: Stack(
@@ -48,6 +48,7 @@ class MyWidgetShortAddText extends StatelessWidget {
                             return KeyEventResult.ignored;
                           },
                         ),
+                        decoration: ToolTheme.textFieldDecoration,
                         onSubmitted: (_) {
                           sendButtonCallBack(myController.text);
                           ToolNavigator.pop();
@@ -75,7 +76,7 @@ class MyWidgetShortAddText extends StatelessWidget {
                             sendButtonCallBack(myController.text);
                             ToolNavigator.pop();
                           },
-                          name: "ADD",
+                          name: (hint != null) ? "CHANGE" : "ADD",
                           color: Colors.green,
                         ),
                       )

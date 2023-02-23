@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../data/tools/navigation_tool.dart';
-import 'my_widgets/MyWidgetButton.dart';
+import '../../data/tools/navigation_tool.dart';
+import '../../data/tools/theme_tool.dart';
+import 'MyWidgetButton.dart';
 
 class AlertAskSureDelete extends StatelessWidget {
   const AlertAskSureDelete(
@@ -22,6 +23,8 @@ class AlertAskSureDelete extends StatelessWidget {
           ),
           AlertDialog(
             content: Card(
+              color: ToolTheme.mainBgColor,
+              elevation: 0,
               child: SizedBox(
                 width: 350,
                 height: 120,
@@ -29,7 +32,10 @@ class AlertAskSureDelete extends StatelessWidget {
                     child: Text(
                   alertText,
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                  ),
                 )),
               ),
             ),

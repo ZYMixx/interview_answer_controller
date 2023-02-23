@@ -39,16 +39,9 @@ class DaoAppDatabase {
           .get());
 
   deleteAnswerVideoPathFromDb(Answer answer) {
-    // print("VIDEO PATH ${answer.videoPath}");
-    // var added = ToolMapper.entityAnswerToDbModel(answer)
-    //     .copyWith(videoPath: Value(null), dataTime: Value(null));
-    // print("VIDEO PATH ${added.videoPath}");
-
     db
         .update(db.answerDbModel)
         .replace(ToolMapper.entityAnswerToDbModel(answer));
-
-    //db.into(db.answerDbModel).insertOnConflictUpdate(added);
   }
 
   updateAnswer(Answer answer) {
@@ -56,8 +49,6 @@ class DaoAppDatabase {
         .update(db.answerDbModel)
         .replace(ToolMapper.entityAnswerToDbModel(answer));
   }
-
-  //subject
 
   Future<List<Subject>> getAllSubject() async =>
       ToolMapper.listSubjectDbModelToEntity(
@@ -88,7 +79,6 @@ class DaoAppDatabase {
               ..whereSamePrimaryKey(dbSubject))
             .get())
         .first;
-    print('${dbSubject.title} ${oldSubject.title}');
     if (dbSubject.title != oldSubject.title) {
       for (var answer in (await getAllAnswerWhereSubject(oldSubject.title))) {
         answer.subjectTitle = subject.title;

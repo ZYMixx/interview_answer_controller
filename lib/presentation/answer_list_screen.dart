@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:interview_answer_controller/data/tools/file_picker.dart';
 import 'package:interview_answer_controller/domain/subject.dart';
-import 'package:interview_answer_controller/presentation/alert_ask_sure_delete.dart';
+import 'package:interview_answer_controller/presentation/my_widgets/alert_ask_sure_delete.dart';
 import 'package:interview_answer_controller/presentation/video_play_screen.dart';
 import 'package:interview_answer_controller/presentation/view_models/answer_screen_view_model.dart';
 import 'package:interview_answer_controller/presentation/view_models/launch_screen_view_model.dart';
 import 'package:provider/provider.dart';
 
 import '../data/tools/navigation_tool.dart';
+import '../data/tools/theme_tool.dart';
 import '../domain/answer.dart';
 import 'add_new_answer_screen.dart';
 import 'add_new_fills_screen.dart';
@@ -33,7 +33,7 @@ class AnswerListScreen extends StatelessWidget {
             alignment: Alignment.topRight,
             child: FloatingActionButton(
               child: const Icon(Icons.arrow_back),
-              backgroundColor: Colors.purple.withOpacity(0.7),
+              backgroundColor: ToolTheme.subjectColor,
               onPressed: () {
                 LaunchScreenViewModel.instance.updateSubjectList();
                 ToolNavigator.pop();
@@ -41,7 +41,10 @@ class AnswerListScreen extends StatelessWidget {
             ),
           ),
         ),
-        body: AnswerListView(answerSubject: answerSubject),
+        body: Container(
+          decoration: ToolTheme.bgBoxDecoration,
+          child: AnswerListView(answerSubject: answerSubject),
+        ),
       ),
     );
   }
@@ -73,7 +76,7 @@ class AnswerListView extends StatelessWidget {
 
 Widget getAddItemButton(VoidCallback jumpFunction) {
   return Card(
-    color: Colors.purple.withOpacity(0.5),
+    color: ToolTheme.addAnswerColor,
     child: SizedBox(
       height: 70,
       child: InkWell(
@@ -114,11 +117,11 @@ class AnswerBlock extends StatelessWidget {
       background: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4.0),
         child: ColoredBox(
-          color: Colors.pinkAccent.withOpacity(0.75),
+          color: ToolTheme.addAnswerColor.withOpacity(0.2),
           child: const Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              "DELETE THIS QUEST",
+              " -> DELETE THIS QUEST ->",
               style: TextStyle(
                 fontSize: 26,
               ),
@@ -128,155 +131,163 @@ class AnswerBlock extends StatelessWidget {
       ),
       key: ValueKey(answer),
       child: Card(
-        color: Colors.greenAccent,
-        child: SizedBox(
-          height: 140,
-          child: Row(
-            children: [
-              Flexible(
-                flex: 0,
-                fit: FlexFit.loose,
-                child: Text((answer.position + 1).toString()),
-              ),
-              createVerticalDivider(),
-              Flexible(
-                flex: 2,
-                fit: FlexFit.tight,
-                child: InkWell(
-                  onTap: () {
-                    jumpToEditAnswerScreen(answer);
-                  },
-                  child: Column(
-                    //Title Quest
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Flexible(
-                        flex: 1,
-                        fit: FlexFit.tight,
-                        child: Text(
-                          answer.title ?? "null - title",
-                          style: const TextStyle(fontSize: 22, shadows: [
-                            Shadow(
-                                blurRadius: 6,
-                                color: Color.fromARGB(90, 0, 0, 0))
-                          ]),
-                        ),
-                      ),
-                      Flexible(
-                          flex: 3,
-                          fit: FlexFit.tight,
-                          child: Text(
-                            answer.questText ?? "null - questText",
-                            style: const TextStyle(
-                              fontSize: 18,
-                            ),
-                          ))
-                    ],
+        color: ToolTheme.answerColor,
+        child: Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage("assets/bg_texture.png"),
+                repeat: ImageRepeat.repeat,
+                opacity: 0.3),
+          ),
+          child: SizedBox(
+            height: 140,
+            child: Row(
+              children: [
+                Flexible(
+                  flex: 0,
+                  fit: FlexFit.loose,
+                  child: Text(
+                    (" ${answer.position + 1}").toString(),
+                    style: const TextStyle(fontSize: 24),
                   ),
                 ),
-              ),
-              createVerticalDivider(),
-              Flexible(
-                flex: 3,
-                fit: FlexFit.tight,
-                child: InkWell(
-                  onTap: () {
-                    jumpToEditFilesAnswerScreen(answer);
-                  },
-                  child: Column(
-                    //Answer Text, Files
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Flexible(
-                        flex: 3,
-                        fit: FlexFit.tight,
-                        child: SingleChildScrollView(
-                          child: MyRichText(
-                              text: answer.answerText ?? "null - answerText"),
-                        ),
-                      ),
-                      (answer.fileList != null)
-                          ? Flexible(
-                              flex: 1,
-                              fit: FlexFit.loose,
-                              child: ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: answer.fileList?.length ?? 0,
-                                scrollDirection: Axis.horizontal,
-                                itemBuilder: (context, index) {
-                                  return AddNewFilesScreen.getFileImageBox(
-                                      answer, answer.fileList![index]);
-                                },
-                              ),
-                            )
-                          : const Text("no any files")
-                    ],
-                  ),
-                ),
-              ),
-              createVerticalDivider(),
-              Flexible(
-                flex: 1,
-                fit: FlexFit.tight,
-                child: InkWell(
-                  onLongPress: () {
-                    print('LONG PRESS');
-                    if (answer.videoPath != null) {
-                      ToolNavigator.push(AlertAskSureDelete(
-                        alertText: "Video will delete from your PC",
-                        deleteAccept: () {
-                          ToolFilePicker.deleteFile(answer.videoPath!);
-                          answer.videoPath = null;
-                          answer.dateTime = null;
-                          AnswerScreenViewModel.instance
-                              .deleteVideoPath(answer);
-                        },
-                      ));
-                    }
-                  },
-                  onTap: () async {
-                    if (answer.videoPath == null) {
-                      AnswerScreenViewModel.instance.addNewVideoPath(answer);
-                    } else {
-                      ToolNavigator.push(
-                        VideoPlayScreen(videoPath: answer.videoPath!),
-                      );
-                    }
-                  },
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Flexible(
+                createVerticalDivider(),
+                Flexible(
+                  flex: 2,
+                  fit: FlexFit.tight,
+                  child: InkWell(
+                    onTap: () {
+                      jumpToEditAnswerScreen(answer);
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Flexible(
                           flex: 1,
                           fit: FlexFit.tight,
-                          child: Text((answer.dateTime ?? "null - dateTime")
-                              .toString())),
-                      Flexible(
-                        flex: 4,
-                        fit: FlexFit.tight,
-                        child: Padding(
-                          padding: EdgeInsets.only(bottom: 15.0),
-                          child: answer.videoPath != null
-                              ? Image(
-                                  image: AssetImage("assets/video_ready.png"))
-                              : Icon(
-                                  size: 50,
-                                  Icons.download,
-                                  color: Colors.purple.withOpacity(0.60),
-                                ),
+                          child: Text(
+                            answer.title ?? "null - title",
+                            style: const TextStyle(fontSize: 22, shadows: [
+                              Shadow(
+                                  blurRadius: 6,
+                                  color: Color.fromARGB(90, 0, 0, 0))
+                            ]),
+                          ),
                         ),
-                      ),
-                    ],
+                        Flexible(
+                            flex: 3,
+                            fit: FlexFit.tight,
+                            child: Text(
+                              answer.questText ?? "null - questText",
+                              style: const TextStyle(
+                                fontSize: 18,
+                              ),
+                            ))
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              const VerticalDivider(
-                color: Colors.purple,
-                indent: 10,
-                endIndent: 10,
-                width: 60,
-              ),
-            ],
+                createVerticalDivider(),
+                Flexible(
+                  flex: 3,
+                  fit: FlexFit.tight,
+                  child: InkWell(
+                    onTap: () {
+                      jumpToEditFilesAnswerScreen(answer);
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Flexible(
+                          flex: 3,
+                          fit: FlexFit.tight,
+                          child: SingleChildScrollView(
+                            child: MyRichText(
+                                text: answer.answerText ?? "null - answerText"),
+                          ),
+                        ),
+                        (answer.fileList != null)
+                            ? Flexible(
+                                flex: 1,
+                                fit: FlexFit.loose,
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: answer.fileList?.length ?? 0,
+                                  scrollDirection: Axis.horizontal,
+                                  itemBuilder: (context, index) {
+                                    return AddNewFilesScreen.getFileImageBox(
+                                        answer, answer.fileList![index]);
+                                  },
+                                ),
+                              )
+                            : const Text("no any files")
+                      ],
+                    ),
+                  ),
+                ),
+                createVerticalDivider(),
+                Flexible(
+                  flex: 1,
+                  fit: FlexFit.tight,
+                  child: InkWell(
+                    onLongPress: () {
+                      if (answer.videoPath != null) {
+                        ToolNavigator.push(AlertAskSureDelete(
+                          alertText: "Video will delete from your PC",
+                          deleteAccept: () {
+                            ToolFilePicker.deleteFile(answer.videoPath!);
+                            answer.videoPath = null;
+                            answer.dateTime = null;
+                            AnswerScreenViewModel.instance
+                                .deleteVideoPath(answer);
+                          },
+                        ));
+                      }
+                    },
+                    onTap: () async {
+                      if (answer.videoPath == null) {
+                        AnswerScreenViewModel.instance.addNewVideoPath(answer);
+                      } else {
+                        ToolNavigator.push(
+                          VideoPlayScreen(videoPath: answer.videoPath!),
+                        );
+                      }
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Flexible(
+                            flex: 1,
+                            fit: FlexFit.tight,
+                            child: Text((answer.dateTime ?? "null - dateTime")
+                                .toString())),
+                        Flexible(
+                          flex: 4,
+                          fit: FlexFit.tight,
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 15.0),
+                            child: answer.videoPath != null
+                                ? const Image(
+                                    image: AssetImage("assets/video_ready.png"))
+                                : const Icon(
+                                    size: 50,
+                                    Icons.download,
+                                    color: ToolTheme.addAnswerColor,
+                                  ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const VerticalDivider(
+                  color: ToolTheme.subjectColor,
+                  indent: 10,
+                  endIndent: 10,
+                  width: 60,
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -285,7 +296,7 @@ class AnswerBlock extends StatelessWidget {
 
   VerticalDivider createVerticalDivider() {
     return const VerticalDivider(
-      color: Colors.purple,
+      color: ToolTheme.subjectColor,
       indent: 10,
       endIndent: 10,
     );
@@ -301,7 +312,6 @@ jumpToCreateAnswerScreen(Subject subject) {
 }
 
 jumpToEditAnswerScreen(Answer answer) {
-  print('$answer');
   ToolNavigator.push(AddNewQuestScreen(
     answer: answer,
     addAnswerCallBack: (String answerQuestText, String? title) {
@@ -313,7 +323,6 @@ jumpToEditAnswerScreen(Answer answer) {
 }
 
 jumpToEditFilesAnswerScreen(Answer answer) {
-  print('$answer');
   ToolNavigator.push(AddNewFilesScreen(
     answer: answer,
     updateAnswerCallBack: (String? answerText, String? filePath) {

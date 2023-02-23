@@ -21,7 +21,6 @@ class AppDatabase extends _$AppDatabase {
       FileSystemEntity dbFolder;
       if (Platform.isWindows) {
         dbFolder = File((await getApplicationSupportDirectory()).path);
-        //dbFolder = File(Platform.script.toFilePath());
       } else {
         dbFolder = await getApplicationDocumentsDirectory();
       }
@@ -49,5 +48,3 @@ class AnswerDbModel extends Table {
   TextColumn get fileList => text()();
   TextColumn get videoPath => text().nullable()();
 }
-
-//flutter pub run build_runner build

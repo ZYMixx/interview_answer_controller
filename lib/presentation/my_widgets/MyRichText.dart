@@ -9,6 +9,7 @@ class MyRichText extends StatelessWidget {
     return RichText(
       text: TextSpan(
         text: "",
+        style: TextStyle(fontSize: 16),
         children: parsTest(text),
       ),
     );
@@ -28,8 +29,11 @@ List<TextSpan> parsTest(String userText) {
     var regularTextPart = userText.substring(0, firstPos);
     var bloodTextPart =
         userText.substring(firstPos, secondPos + 2).replaceAll("**", "");
-    formattedTextSpanList.add(
-        TextSpan(text: regularTextPart, style: TextStyle(color: Colors.black)));
+    formattedTextSpanList.add(TextSpan(
+        text: regularTextPart,
+        style: TextStyle(
+          color: Colors.black,
+        )));
     formattedTextSpanList.add(TextSpan(
         text: bloodTextPart,
         style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)));
