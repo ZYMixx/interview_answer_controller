@@ -1,16 +1,9 @@
 # interview_answer_controller
 
-interview answer controller
+The app helps organize topics and questions. Two main screens, simple clear interface displaying all important information:
 
-## Getting Started
+![](https://cdn.discordapp.com/attachments/784688047719579652/1078299831417700423/launch_screen.gif)
 
-This project is a starting point for a Flutter application.
+photo/video support:
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![](https://cdn.discordapp.com/attachments/784688047719579652/1078299850967355442/video_work.gif)
