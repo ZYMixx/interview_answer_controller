@@ -6,5 +6,5 @@ The app helps organize topics and questions. Two main screens, simple clear inte
 
 photo/video support:
 
-![video_work](https://cdn.discordapp.com/attachments/784688047719579652/1078299850967355442/video_work.gif) 
+![video_work](https://cdn.discordapp.com/attachments/784688047719579652/1078306203714727976/video_work.gif) 
 
