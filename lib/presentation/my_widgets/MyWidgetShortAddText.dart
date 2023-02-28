@@ -73,8 +73,12 @@ class MyWidgetShortAddText extends StatelessWidget {
                       Flexible(
                         child: MyWidgetButton(
                           onPressed: () {
-                            sendButtonCallBack(myController.text);
-                            ToolNavigator.pop();
+                            if (hint == myController.text) {
+                              ToolNavigator.pop();
+                            } else {
+                              sendButtonCallBack(myController.text);
+                              ToolNavigator.pop();
+                            }
                           },
                           name: (hint != null) ? "CHANGE" : "ADD",
                           color: Colors.green,
