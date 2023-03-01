@@ -8,18 +8,17 @@ class LaunchScreenViewModel extends ChangeNotifier {
   static LaunchScreenViewModel get instance =>
       _instance ??= LaunchScreenViewModel();
   static LaunchScreenViewModel? _instance;
-
-  @override
-  void dispose() {
-    _instance = null;
-    super.dispose();
-  }
-
   final DaoAppDatabase _dao = DaoAppDatabase();
   List<Subject> subjectList = [];
 
   LaunchScreenViewModel() {
     updateSubjectList();
+  }
+
+  @override
+  void dispose() {
+    _instance = null;
+    super.dispose();
   }
 
   updateSubjectList() async {
@@ -75,7 +74,10 @@ class LaunchScreenViewModel extends ChangeNotifier {
     return false;
   }
 
-  swapSubject(Subject moveSubject, int newPos) {
+  swapSubject({
+    required Subject moveSubject,
+    required int newPos,
+  }) {
     subjectList.removeWhere((element) => element == moveSubject);
     if (newPos < moveSubject.position) {
       subjectList.insert(newPos, moveSubject);
@@ -84,7 +86,7 @@ class LaunchScreenViewModel extends ChangeNotifier {
     }
     subjectList.asMap().forEach((index, subj) {
       subj.position = index;
-      _dao.simpleUpdateAnswer(subj);
+      _dao.simpleUpdateSubject(subj);
     });
     updateSubjectList();
   }

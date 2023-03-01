@@ -1,4 +1,14 @@
 class Answer {
+  int? id;
+  int position;
+  DateTime? dateTime;
+  String subjectTitle;
+  String? title;
+  String? questText;
+  String? answerText;
+  List<dynamic>? fileList;
+  String? videoPath;
+
   Answer({
     required this.subjectTitle,
     this.id,
@@ -10,15 +20,6 @@ class Answer {
     this.fileList,
     this.videoPath,
   });
-  int? id;
-  int position;
-  DateTime? dateTime;
-  String subjectTitle;
-  String? title;
-  String? questText;
-  String? answerText;
-  List<dynamic>? fileList;
-  String? videoPath;
 
   addToList(String path) {
     if (fileList == null) {

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 class MyWidgetButton extends StatefulWidget {
+  final String name;
+  final VoidCallback onPressed;
+  final MaterialColor color;
   const MyWidgetButton(
       {super.key,
       required this.onPressed,
       required this.name,
       required this.color});
-  final String name;
-  final MaterialColor color;
-  final VoidCallback onPressed;
 
   @override
   State<MyWidgetButton> createState() => _MyWidgetButtonState();

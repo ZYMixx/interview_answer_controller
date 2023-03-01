@@ -4,18 +4,17 @@ import 'package:flutter/services.dart';
 
 import '../../data/tools/navigation_tool.dart';
 import '../../data/tools/theme_tool.dart';
-import 'MyWidgetButton.dart';
+import 'my_widget_button.dart';
 
 class MyWidgetShortAddText extends StatelessWidget {
-  const MyWidgetShortAddText(
-      {Key? key, required this.sendButtonCallBack, this.hint})
-      : super(key: key);
   final String? hint;
   final Function(String) sendButtonCallBack;
+  final myController = TextEditingController();
+  MyWidgetShortAddText({Key? key, required this.sendButtonCallBack, this.hint})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final myController = TextEditingController();
     if (hint != null) {
       myController.text = hint!;
     }
@@ -23,11 +22,9 @@ class MyWidgetShortAddText extends StatelessWidget {
       backgroundColor: const Color.fromRGBO(0, 0, 0, 0.35),
       body: Stack(
         children: [
-          InkWell(
+          const InkWell(
             splashFactory: NoSplash.splashFactory,
-            onTap: () {
-              ToolNavigator.pop();
-            },
+            onTap: ToolNavigator.pop,
           ),
           Center(
             child: FractionallySizedBox(
@@ -41,45 +38,30 @@ class MyWidgetShortAddText extends StatelessWidget {
                       heightFactor: 0.2,
                       child: CupertinoTextField(
                         focusNode: FocusNode(
-                          onKey: (node, event) {
-                            if (event.isKeyPressed(LogicalKeyboardKey.escape)) {
-                              ToolNavigator.pop();
-                            }
-                            return KeyEventResult.ignored;
-                          },
+                          onKey: onKeyEvent,
                         ),
                         decoration: ToolTheme.textFieldDecoration,
-                        onSubmitted: (_) {
-                          sendButtonCallBack(myController.text);
-                          ToolNavigator.pop();
-                        },
+                        onSubmitted: (_) => onAddTextPressed(),
                         autofocus: true,
                         controller: myController,
                         textAlign: TextAlign.center,
                         textAlignVertical: TextAlignVertical.center,
-                        style: TextStyle(fontSize: 36),
+                        style: const TextStyle(fontSize: 36),
                       ),
                     ),
                   ),
                   Row(
                     children: [
-                      Flexible(
+                      const Flexible(
                         child: MyWidgetButton(
-                          onPressed: () => ToolNavigator.pop(),
+                          onPressed: ToolNavigator.pop,
                           name: "CANCEL",
                           color: Colors.red,
                         ),
                       ),
                       Flexible(
                         child: MyWidgetButton(
-                          onPressed: () {
-                            if (hint == myController.text) {
-                              ToolNavigator.pop();
-                            } else {
-                              sendButtonCallBack(myController.text);
-                              ToolNavigator.pop();
-                            }
-                          },
+                          onPressed: onAddTextPressed,
                           name: (hint != null) ? "CHANGE" : "ADD",
                           color: Colors.green,
                         ),
@@ -93,5 +75,21 @@ class MyWidgetShortAddText extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  KeyEventResult onKeyEvent(node, event) {
+    if (event.isKeyPressed(LogicalKeyboardKey.escape)) {
+      ToolNavigator.pop();
+    }
+    return KeyEventResult.ignored;
+  }
+
+  void onAddTextPressed() {
+    if (hint == myController.text) {
+      ToolNavigator.pop();
+    } else {
+      sendButtonCallBack(myController.text);
+      ToolNavigator.pop();
+    }
   }
 }

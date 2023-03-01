@@ -7,7 +7,7 @@ import '../data/tools/navigation_tool.dart';
 import '../data/tools/theme_tool.dart';
 import '../domain/subject.dart';
 import 'my_widgets/alert_ask_sure_delete.dart';
-import 'my_widgets/MyWidgetShortAddText.dart';
+import 'my_widgets/my_widget_short_add_text.dart';
 
 late LaunchScreenViewModel _viewModel;
 
@@ -42,7 +42,10 @@ class SubjectListView extends StatelessWidget {
       footer: addSubjectButton(jumpToCreateSubjectScreen),
       itemCount: subjectList.length,
       onReorder: (oldItem, newItem) {
-        _viewModel.swapSubject(subjectList[oldItem], newItem);
+        _viewModel.swapSubject(
+          moveSubject: subjectList[oldItem],
+          newPos: newItem,
+        );
       },
       itemBuilder: (BuildContext context, int index) {
         return SubjectBlock(
@@ -84,8 +87,10 @@ Widget addSubjectButton(VoidCallback jumpFunction) {
 }
 
 class SubjectBlock extends StatelessWidget {
-  const SubjectBlock({Key? key, required this.subject}) : super(key: key);
   final Subject subject;
+
+  const SubjectBlock({Key? key, required this.subject}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -107,127 +112,12 @@ class SubjectBlock extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Flexible(
-                  flex: 4,
-                  fit: FlexFit.tight,
-                  child: Center(
-                    child: Text(
-                      subject.title,
-                      style: const TextStyle(fontSize: 26, shadows: [
-                        Shadow(
-                            blurRadius: 6, color: Color.fromARGB(60, 0, 0, 0))
-                      ]),
-                    ),
-                  ),
-                ),
-                createVerticalDivider(),
-                Flexible(
-                  flex: 1,
-                  fit: FlexFit.tight,
-                  child: RichText(
-                    textAlign: TextAlign.center,
-                    text: TextSpan(
-                        text: "Quests:\n",
-                        style: const TextStyle(
-                          fontSize: 18,
-                          color: Colors.black,
-                        ),
-                        children: [
-                          TextSpan(
-                            text: "${subject.questCount}\n",
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w600,
-                              shadows: [
-                                Shadow(
-                                  blurRadius: 1,
-                                  color: Colors.black45,
-                                )
-                              ],
-                            ),
-                          ),
-                          const TextSpan(
-                            text: "Undone:\n",
-                          ),
-                          TextSpan(
-                            text: "${subject.undoneQuest}",
-                            style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.w600,
-                              color: subject.undoneQuest != 0
-                                  ? Colors.pink
-                                  : Colors.green,
-                              shadows: const [
-                                Shadow(
-                                  blurRadius: 3,
-                                  color: Colors.black,
-                                )
-                              ],
-                            ),
-                          ),
-                        ]),
-                  ),
-                ),
-                createVerticalDivider(),
-                Flexible(
-                  flex: 1,
-                  fit: FlexFit.tight,
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 150,
-                    child: Row(
-                      children: [
-                        Flexible(
-                          fit: FlexFit.tight,
-                          child: InkWell(
-                            onTap: () => jumpToEditSubjectScreen(subject),
-                            child: const SizedBox(
-                                width: double.infinity,
-                                height: double.infinity,
-                                child: Center(
-                                  child: Icon(
-                                    Icons.edit_note,
-                                    size: 50,
-                                  ),
-                                )),
-                          ),
-                        ),
-                        Flexible(
-                          fit: FlexFit.tight,
-                          child: InkWell(
-                            onTap: () {
-                              ToolNavigator.push(
-                                AlertAskSureDelete(
-                                  alertText:
-                                      "Delete This Subject?\nand all answers",
-                                  deleteAccept: () {
-                                    _viewModel.deleteSubject(subject);
-                                  },
-                                ),
-                              );
-                            },
-                            child: const SizedBox(
-                              width: double.infinity,
-                              height: double.infinity,
-                              child: Center(
-                                child: Icon(
-                                  Icons.delete,
-                                  size: 40,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const VerticalDivider(
-                  color: ToolTheme.answerColor,
-                  indent: 10,
-                  endIndent: 10,
-                  width: 60,
-                ),
+                buildTitleSubjectBlock(),
+                buildVerticalDivider(),
+                buildDataSubjectBlock(),
+                buildVerticalDivider(),
+                buildOptionSubjectBlock(),
+                buildVerticalDivider(width: 60),
               ],
             ),
           ),
@@ -236,11 +126,130 @@ class SubjectBlock extends StatelessWidget {
     );
   }
 
-  VerticalDivider createVerticalDivider() {
-    return const VerticalDivider(
+  Flexible buildOptionSubjectBlock() {
+    return Flexible(
+      flex: 1,
+      fit: FlexFit.tight,
+      child: SizedBox(
+        width: double.infinity,
+        height: 150,
+        child: Row(
+          children: [
+            Flexible(
+              fit: FlexFit.tight,
+              child: InkWell(
+                onTap: () => jumpToEditSubjectScreen(subject),
+                child: const SizedBox(
+                    width: double.infinity,
+                    height: double.infinity,
+                    child: Center(
+                      child: Icon(
+                        Icons.edit_note,
+                        size: 50,
+                      ),
+                    )),
+              ),
+            ),
+            Flexible(
+              fit: FlexFit.tight,
+              child: InkWell(
+                onTap: () {
+                  ToolNavigator.push(
+                    AlertAskSureDelete(
+                      alertText: "Delete This Subject?\nand all answers",
+                      deleteAccept: () {
+                        _viewModel.deleteSubject(subject);
+                      },
+                    ),
+                  );
+                },
+                child: const SizedBox(
+                  width: double.infinity,
+                  height: double.infinity,
+                  child: Center(
+                    child: Icon(
+                      Icons.delete,
+                      size: 40,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Flexible buildDataSubjectBlock() {
+    return Flexible(
+      flex: 1,
+      fit: FlexFit.tight,
+      child: RichText(
+        textAlign: TextAlign.center,
+        text: TextSpan(
+            text: "Quests:\n",
+            style: const TextStyle(
+              fontSize: 18,
+              color: Colors.black,
+            ),
+            children: [
+              TextSpan(
+                text: "${subject.questCount}\n",
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                  shadows: [
+                    Shadow(
+                      blurRadius: 1,
+                      color: Colors.black45,
+                    )
+                  ],
+                ),
+              ),
+              const TextSpan(
+                text: "Undone:\n",
+              ),
+              TextSpan(
+                text: "${subject.undoneQuest}",
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w600,
+                  color: subject.undoneQuest != 0 ? Colors.pink : Colors.green,
+                  shadows: const [
+                    Shadow(
+                      blurRadius: 3,
+                      color: Colors.black,
+                    )
+                  ],
+                ),
+              ),
+            ]),
+      ),
+    );
+  }
+
+  Flexible buildTitleSubjectBlock() {
+    return Flexible(
+      flex: 4,
+      fit: FlexFit.tight,
+      child: Center(
+        child: Text(
+          subject.title,
+          style: const TextStyle(fontSize: 26, shadows: [
+            Shadow(blurRadius: 6, color: Color.fromARGB(60, 0, 0, 0))
+          ]),
+        ),
+      ),
+    );
+  }
+
+  VerticalDivider buildVerticalDivider({double width = 0}) {
+    return VerticalDivider(
       color: ToolTheme.answerColor,
       indent: 10,
       endIndent: 10,
+      width: width,
     );
   }
 }

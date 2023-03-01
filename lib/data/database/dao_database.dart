@@ -1,5 +1,4 @@
 import 'package:drift/drift.dart';
-import 'package:flutter/foundation.dart';
 
 import '../../domain/answer.dart';
 import '../../domain/subject.dart';
@@ -28,9 +27,9 @@ class DaoAppDatabase {
       .delete(ToolMapper.entityAnswerToDbModel(answer));
 
   editAnswer(Answer answer) {
-    db.update(db.answerDbModel)
-      ..where((tbl) => tbl.id.equals(answer.id!))
-      ..write(ToolMapper.entityAnswerToDbModel(answer));
+    db
+        .update(db.answerDbModel)
+        .replace(ToolMapper.entityAnswerToDbModel(answer));
   }
 
   Future<List<Answer>> getAllAnswerOrderByPosition() async =>
@@ -39,12 +38,6 @@ class DaoAppDatabase {
           .get());
 
   deleteAnswerVideoPathFromDb(Answer answer) {
-    db
-        .update(db.answerDbModel)
-        .replace(ToolMapper.entityAnswerToDbModel(answer));
-  }
-
-  updateAnswer(Answer answer) {
     db
         .update(db.answerDbModel)
         .replace(ToolMapper.entityAnswerToDbModel(answer));
@@ -67,7 +60,7 @@ class DaoAppDatabase {
       .delete(db.subjectDbModel)
       .delete(ToolMapper.entitySubjectToDbModel(subject));
 
-  simpleUpdateAnswer(Subject subject) {
+  simpleUpdateSubject(Subject subject) {
     db
         .into(db.subjectDbModel)
         .insertOnConflictUpdate(ToolMapper.entitySubjectToDbModel(subject));
@@ -82,7 +75,7 @@ class DaoAppDatabase {
     if (dbSubject.title != oldSubject.title) {
       for (var answer in (await getAllAnswerWhereSubject(oldSubject.title))) {
         answer.subjectTitle = subject.title;
-        updateAnswer(answer);
+        editAnswer(answer);
       }
     }
     db.into(db.subjectDbModel).insertOnConflictUpdate(dbSubject);

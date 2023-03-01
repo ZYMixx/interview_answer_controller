@@ -1,29 +1,28 @@
 import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:interview_answer_controller/presentation/answer_list_screen.dart';
 import 'package:interview_answer_controller/presentation/view_models/answer_screen_view_model.dart';
 import '../data/tools/file_picker.dart';
 import '../data/tools/navigation_tool.dart';
 import '../data/tools/theme_tool.dart';
 import '../domain/answer.dart';
-import 'my_widgets/MyWidgetButton.dart';
+import 'my_widgets/my_widget_button.dart';
 
 class AddNewFilesScreen extends StatefulWidget {
+  final Function({String? answerText, String? filsPath}) updateAnswerCallBack;
+  final Answer answer;
+
   const AddNewFilesScreen(
       {Key? key, required this.updateAnswerCallBack, required this.answer})
       : super(key: key);
-  final Function(String? answerText, String? filsPath) updateAnswerCallBack;
-  final Answer answer;
 
   @override
   State<AddNewFilesScreen> createState() => _AddNewFilesScreenState();
 
-  static Widget getFileImageBox(Answer answer, String filePath,
-      {Function? callBack}) {
+  static Widget buildFileImageBox(
+      {required Answer answer, required String filePath, Function? callBack}) {
     File file = File(filePath);
     var image2 = Image.file(
       file,
@@ -71,21 +70,19 @@ class AddNewFilesScreen extends StatefulWidget {
 }
 
 class _AddNewFilesScreenState extends State<AddNewFilesScreen> {
+  final myControllerAnswer = TextEditingController();
+  String? filePath;
+
   @override
   Widget build(BuildContext context) {
-    String? filePath;
-    final myControllerAnswer = TextEditingController();
     myControllerAnswer.text = widget.answer.answerText ?? "";
-
     return Scaffold(
       backgroundColor: const Color.fromRGBO(0, 0, 0, 0.35),
       body: Stack(
         children: [
-          InkWell(
+          const InkWell(
             splashFactory: NoSplash.splashFactory,
-            onTap: () {
-              ToolNavigator.pop();
-            },
+            onTap: ToolNavigator.pop,
           ),
           Center(
             child: FractionallySizedBox(
@@ -103,18 +100,9 @@ class _AddNewFilesScreenState extends State<AddNewFilesScreen> {
                       heightFactor: 0.7,
                       child: CupertinoTextField(
                         focusNode: FocusNode(
-                          onKey: (node, event) {
-                            if (event.isKeyPressed(LogicalKeyboardKey.escape)) {
-                              ToolNavigator.pop();
-                            }
-                            return KeyEventResult.ignored;
-                          },
+                          onKey: onKeyEvent,
                         ),
-                        onSubmitted: (_) {
-                          widget.updateAnswerCallBack
-                              .call(myControllerAnswer.text, filePath);
-                          ToolNavigator.pop();
-                        },
+                        onSubmitted: (_) => onAddAnswerTextPressed(),
                         decoration: ToolTheme.textFieldDecoration,
                         maxLines: null,
                         autofocus: true,
@@ -145,11 +133,12 @@ class _AddNewFilesScreenState extends State<AddNewFilesScreen> {
                                       (widget.answer.fileList?.length ?? 0)) {
                                 return addNewFileButton(widget.answer);
                               }
-                              return AddNewFilesScreen.getFileImageBox(
-                                  widget.answer, widget.answer.fileList![index],
+                              return AddNewFilesScreen.buildFileImageBox(
+                                  answer: widget.answer,
+                                  filePath: widget.answer.fileList![index],
                                   callBack: () {
-                                setState(() {});
-                              });
+                                    setState(() {});
+                                  });
                             },
                           ),
                         ),
@@ -158,22 +147,16 @@ class _AddNewFilesScreenState extends State<AddNewFilesScreen> {
                   ),
                   Row(
                     children: [
-                      Flexible(
+                      const Flexible(
                         child: MyWidgetButton(
-                          onPressed: () {
-                            ToolNavigator.pop();
-                          },
+                          onPressed: ToolNavigator.pop,
                           name: "CANSEL",
                           color: Colors.red,
                         ),
                       ),
                       Flexible(
                         child: MyWidgetButton(
-                          onPressed: () {
-                            widget.updateAnswerCallBack
-                                .call(myControllerAnswer.text, filePath);
-                            ToolNavigator.pop();
-                          },
+                          onPressed: onAddAnswerTextPressed,
                           name: "CHANGE",
                           color: Colors.green,
                         ),
@@ -187,6 +170,19 @@ class _AddNewFilesScreenState extends State<AddNewFilesScreen> {
         ],
       ),
     );
+  }
+
+  KeyEventResult onKeyEvent(node, event) {
+    if (event.isKeyPressed(LogicalKeyboardKey.escape)) {
+      ToolNavigator.pop();
+    }
+    return KeyEventResult.ignored;
+  }
+
+  void onAddAnswerTextPressed() {
+    widget.updateAnswerCallBack
+        .call(answerText: myControllerAnswer.text, filsPath: filePath);
+    ToolNavigator.pop();
   }
 
   Widget addNewFileButton(Answer answer) {

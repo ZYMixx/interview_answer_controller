@@ -20,6 +20,12 @@ class AnswerScreenViewModel extends ChangeNotifier {
     return _instance ??= AnswerScreenViewModel(subject);
   }
 
+  AnswerScreenViewModel(Subject subject) {
+    _instanceSubject = subject;
+    _subjectTitle = subject.title;
+    updateAnswerList();
+  }
+
   @override
   void dispose() {
     _instance = null;
@@ -31,12 +37,6 @@ class AnswerScreenViewModel extends ChangeNotifier {
   final DaoAppDatabase _dao = DaoAppDatabase();
   String _subjectTitle = "";
 
-  AnswerScreenViewModel(Subject subject) {
-    _instanceSubject = subject;
-    _subjectTitle = subject.title;
-    updateAnswerList();
-  }
-
   updateAnswerList() async {
     answerList = await _dao.getAllAnswerWhereSubject(_subjectTitle);
     notifyListeners();
@@ -47,19 +47,23 @@ class AnswerScreenViewModel extends ChangeNotifier {
     updateAnswerList();
   }
 
-  addAnswer(String answerQuest, String subjectTitle, String? title) async {
+  addAnswer({
+    required String questText,
+    required String subjectTitle,
+    required String? title,
+  }) async {
     Answer answer;
     if (answerList.isEmpty) {
       answer = Answer(
           title: title,
-          questText: answerQuest,
+          questText: questText,
           position: 0,
           subjectTitle: subjectTitle);
       answer.position = 0;
     } else {
       answer = Answer(
-          questText: answerQuest,
           title: title,
+          questText: questText,
           position: answerList.last.position + 1,
           subjectTitle: subjectTitle);
     }
@@ -76,13 +80,13 @@ class AnswerScreenViewModel extends ChangeNotifier {
     }
     answerList.asMap().forEach((index, subj) {
       subj.position = index;
-      _dao.updateAnswer(subj);
+      _dao.editAnswer(subj);
     });
     updateAnswerList();
   }
 
   editAnswer(Answer oldAnswer) {
-    _dao.updateAnswer(oldAnswer);
+    _dao.editAnswer(oldAnswer);
     updateAnswerList();
   }
 

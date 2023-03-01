@@ -4,19 +4,20 @@ import 'package:flutter/services.dart';
 import '../data/tools/navigation_tool.dart';
 import '../data/tools/theme_tool.dart';
 import '../domain/answer.dart';
-import 'my_widgets/MyWidgetButton.dart';
+import 'my_widgets/my_widget_button.dart';
 
 class AddNewQuestScreen extends StatelessWidget {
-  const AddNewQuestScreen(
-      {Key? key, required this.addAnswerCallBack, this.answer})
-      : super(key: key);
-  final Function(String answerQuestText, String? answerTitle) addAnswerCallBack;
+  final Function({required String answerQuestText, String? answerTitle})
+      addAnswerCallBack;
   final Answer? answer;
+  final myControllerTitle = TextEditingController();
+  final myControllerAnswerQuest = TextEditingController();
+
+  AddNewQuestScreen({Key? key, required this.addAnswerCallBack, this.answer})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final myControllerTitle = TextEditingController();
-    final myControllerAnswerQuest = TextEditingController();
     if (answer != null) {
       myControllerTitle.text = answer?.title ?? "";
       myControllerAnswerQuest.text = answer?.questText ?? "";
@@ -25,11 +26,9 @@ class AddNewQuestScreen extends StatelessWidget {
       backgroundColor: const Color.fromRGBO(0, 0, 0, 0.35),
       body: Stack(
         children: [
-          InkWell(
+          const InkWell(
             splashFactory: NoSplash.splashFactory,
-            onTap: () {
-              ToolNavigator.pop();
-            },
+            onTap: ToolNavigator.pop,
           ),
           Center(
             child: FractionallySizedBox(
@@ -41,18 +40,9 @@ class AddNewQuestScreen extends StatelessWidget {
                     height: 35,
                     child: CupertinoTextField(
                       focusNode: FocusNode(
-                        onKey: (node, event) {
-                          if (event.isKeyPressed(LogicalKeyboardKey.escape)) {
-                            ToolNavigator.pop();
-                          }
-                          return KeyEventResult.ignored;
-                        },
+                        onKey: onKeyEvent,
                       ),
-                      onSubmitted: (_) {
-                        addAnswerCallBack.call(myControllerAnswerQuest.text,
-                            myControllerTitle.text);
-                        ToolNavigator.pop();
-                      },
+                      onSubmitted: (_) => onAddAnswerPressed(),
                       decoration: ToolTheme.textFieldDecoration,
                       controller: myControllerTitle,
                       textAlign: TextAlign.center,
@@ -65,18 +55,9 @@ class AddNewQuestScreen extends StatelessWidget {
                       heightFactor: 0.5,
                       child: CupertinoTextField(
                         focusNode: FocusNode(
-                          onKey: (node, event) {
-                            if (event.isKeyPressed(LogicalKeyboardKey.escape)) {
-                              ToolNavigator.pop();
-                            }
-                            return KeyEventResult.ignored;
-                          },
+                          onKey: onKeyEvent,
                         ),
-                        onSubmitted: (_) {
-                          addAnswerCallBack.call(myControllerAnswerQuest.text,
-                              myControllerTitle.text);
-                          ToolNavigator.pop();
-                        },
+                        onSubmitted: (_) => onAddAnswerPressed(),
                         decoration: ToolTheme.textFieldDecoration,
                         maxLines: null,
                         autofocus: true,
@@ -89,22 +70,16 @@ class AddNewQuestScreen extends StatelessWidget {
                   ),
                   Row(
                     children: [
-                      Flexible(
+                      const Flexible(
                         child: MyWidgetButton(
-                          onPressed: () {
-                            ToolNavigator.pop();
-                          },
+                          onPressed: ToolNavigator.pop,
                           name: "CANSEL",
                           color: Colors.red,
                         ),
                       ),
                       Flexible(
                         child: MyWidgetButton(
-                          onPressed: () {
-                            addAnswerCallBack.call(myControllerAnswerQuest.text,
-                                myControllerTitle.text);
-                            ToolNavigator.pop();
-                          },
+                          onPressed: onAddAnswerPressed,
                           name: (answer != null) ? "CHANGE" : "ADD ANSWER",
                           color: Colors.green,
                         ),
@@ -118,5 +93,20 @@ class AddNewQuestScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  KeyEventResult onKeyEvent(node, event) {
+    if (event.isKeyPressed(LogicalKeyboardKey.escape)) {
+      ToolNavigator.pop();
+    }
+    return KeyEventResult.ignored;
+  }
+
+  void onAddAnswerPressed() {
+    addAnswerCallBack.call(
+      answerQuestText: myControllerAnswerQuest.text,
+      answerTitle: myControllerTitle.text,
+    );
+    ToolNavigator.pop();
   }
 }

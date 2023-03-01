@@ -2,21 +2,21 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class MyRichText extends StatelessWidget {
-  const MyRichText({Key? key, required this.text}) : super(key: key);
   final String text;
+  const MyRichText({Key? key, required this.text}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return RichText(
       text: TextSpan(
         text: "",
         style: TextStyle(fontSize: 16),
-        children: parsTest(text),
+        children: parsText(text),
       ),
     );
   }
 }
 
-List<TextSpan> parsTest(String userText) {
+List<TextSpan> parsText(String userText) {
   List<TextSpan> formattedTextSpanList = [];
   var firstPos = 0;
   var secondPos = 0;

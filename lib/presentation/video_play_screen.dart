@@ -7,8 +7,8 @@ import 'package:flutter_meedu_videoplayer/meedu_player.dart';
 import 'package:interview_answer_controller/data/tools/navigation_tool.dart';
 
 class VideoPlayScreen extends StatefulWidget {
-  const VideoPlayScreen({Key? key, required this.videoPath}) : super(key: key);
   final String videoPath;
+  const VideoPlayScreen({Key? key, required this.videoPath}) : super(key: key);
   @override
   State<StatefulWidget> createState() {
     return _VideoPlayScreenState();

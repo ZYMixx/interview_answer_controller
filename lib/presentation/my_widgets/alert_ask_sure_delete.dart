@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-
 import '../../data/tools/navigation_tool.dart';
 import '../../data/tools/theme_tool.dart';
-import 'MyWidgetButton.dart';
+import 'my_widget_button.dart';
 
 class AlertAskSureDelete extends StatelessWidget {
+  final String alertText;
+  final Function deleteAccept;
   const AlertAskSureDelete(
       {Key? key, required this.alertText, required this.deleteAccept})
       : super(key: key);
-  final String alertText;
-  final Function deleteAccept;
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +16,9 @@ class AlertAskSureDelete extends StatelessWidget {
       backgroundColor: const Color.fromARGB(60, 0, 0, 0),
       body: Stack(
         children: [
-          InkWell(
+          const InkWell(
             splashFactory: NoSplash.splashFactory,
-            onTap: () => ToolNavigator.pop(),
+            onTap: ToolNavigator.pop,
           ),
           AlertDialog(
             content: Card(
@@ -32,7 +31,7 @@ class AlertAskSureDelete extends StatelessWidget {
                     child: Text(
                   alertText,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w600,
                   ),
@@ -41,15 +40,12 @@ class AlertAskSureDelete extends StatelessWidget {
             ),
             actionsAlignment: MainAxisAlignment.start,
             actions: [
-              MyWidgetButton(
-                  onPressed: () => ToolNavigator.pop(),
+              const MyWidgetButton(
+                  onPressed: ToolNavigator.pop,
                   name: "STOP",
                   color: Colors.purple),
               MyWidgetButton(
-                  onPressed: () {
-                    deleteAccept.call();
-                    ToolNavigator.pop();
-                  },
+                  onPressed: onDeleteAcceptPressed,
                   name: "DELETE",
                   color: Colors.red)
             ],
@@ -57,5 +53,10 @@ class AlertAskSureDelete extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void onDeleteAcceptPressed() {
+    deleteAccept.call();
+    ToolNavigator.pop();
   }
 }
