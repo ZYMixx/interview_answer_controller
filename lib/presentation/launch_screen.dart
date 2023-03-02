@@ -106,9 +106,7 @@ class SubjectBlock extends StatelessWidget {
                 opacity: 0.3),
           ),
           child: InkWell(
-            onTap: () {
-              jumpToAnswerList(subject);
-            },
+            onTap: () => jumpToAnswerList(subject),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

@@ -59,9 +59,7 @@ class _VideoPlayScreenState extends State<VideoPlayScreen> {
       child: Scaffold(
         backgroundColor: const Color.fromRGBO(0, 0, 0, 0.35),
         body: InkWell(
-          onTap: () {
-            ToolNavigator.pop();
-          },
+          onTap: ToolNavigator.pop,
           child: Center(
             child: Padding(
               padding: const EdgeInsets.all(60.0),

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:interview_answer_controller/data/tools/file_picker.dart';
 import 'package:interview_answer_controller/domain/subject.dart';
 import 'package:interview_answer_controller/presentation/my_widgets/alert_ask_sure_delete.dart';
+import 'package:interview_answer_controller/presentation/show_image_widget.dart';
 import 'package:interview_answer_controller/presentation/video_play_screen.dart';
 import 'package:interview_answer_controller/presentation/view_models/answer_screen_view_model.dart';
 import 'package:interview_answer_controller/presentation/view_models/launch_screen_view_model.dart';
 import 'package:provider/provider.dart';
-
 import '../data/tools/navigation_tool.dart';
 import '../data/tools/theme_tool.dart';
 import '../domain/answer.dart';
@@ -181,9 +181,7 @@ class AnswerBlock extends StatelessWidget {
       flex: 2,
       fit: FlexFit.tight,
       child: InkWell(
-        onTap: () {
-          jumpToEditAnswerScreen(answer);
-        },
+        onTap: () => jumpToEditAnswerScreen(answer),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -217,9 +215,7 @@ class AnswerBlock extends StatelessWidget {
       flex: 3,
       fit: FlexFit.tight,
       child: InkWell(
-        onTap: () {
-          jumpToEditFilesAnswerScreen(answer);
-        },
+        onTap: () => jumpToEditFilesAnswerScreen(answer),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -240,7 +236,7 @@ class AnswerBlock extends StatelessWidget {
                       itemCount: answer.fileList?.length ?? 0,
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (context, index) {
-                        return AddNewFilesScreen.buildFileImageBox(
+                        return ShowImageWidget(
                             answer: answer, filePath: answer.fileList![index]);
                       },
                     ),
@@ -257,28 +253,8 @@ class AnswerBlock extends StatelessWidget {
       flex: 1,
       fit: FlexFit.tight,
       child: InkWell(
-        onLongPress: () {
-          if (answer.videoPath != null) {
-            ToolNavigator.push(AlertAskSureDelete(
-              alertText: "Video will delete from your PC",
-              deleteAccept: () {
-                ToolFilePicker.deleteFile(answer.videoPath!);
-                answer.videoPath = null;
-                answer.dateTime = null;
-                AnswerScreenViewModel.instance.deleteVideoPath(answer);
-              },
-            ));
-          }
-        },
-        onTap: () async {
-          if (answer.videoPath == null) {
-            AnswerScreenViewModel.instance.addNewVideoPath(answer);
-          } else {
-            ToolNavigator.push(
-              VideoPlayScreen(videoPath: answer.videoPath!),
-            );
-          }
-        },
+        onLongPress: onDeleteVideo,
+        onTap: onVideoButtonTap,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -304,6 +280,30 @@ class AnswerBlock extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void onVideoButtonTap() async {
+    if (answer.videoPath == null) {
+      AnswerScreenViewModel.instance.addNewVideoPath(answer);
+    } else {
+      ToolNavigator.push(
+        VideoPlayScreen(videoPath: answer.videoPath!),
+      );
+    }
+  }
+
+  void onDeleteVideo() {
+    if (answer.videoPath != null) {
+      ToolNavigator.push(AlertAskSureDelete(
+        alertText: "Video will delete from your PC",
+        deleteAccept: () {
+          ToolFilePicker.deleteFile(answer.videoPath!);
+          answer.videoPath = null;
+          answer.dateTime = null;
+          AnswerScreenViewModel.instance.deleteVideoPath(answer);
+        },
+      ));
+    }
   }
 
   VerticalDivider buildVerticalDivider({double width = 0}) {

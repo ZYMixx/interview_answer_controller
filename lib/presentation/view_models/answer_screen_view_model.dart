@@ -114,6 +114,27 @@ class AnswerScreenViewModel extends ChangeNotifier {
     updateAnswerList();
   }
 
+  choseNewImage(Answer answer) async {
+    try {
+      List<String?>? filePathList = await ToolFilePicker.choseImageFile();
+      if (filePathList != null) {
+        var number = 0;
+        for (var path in filePathList) {
+          String fileName =
+              "${answer.subjectTitle}_${answer.id}_${number.toString()}_${DateTime.now()}";
+          number++;
+          fileName = fileName.replaceAll(':', '-');
+          String newFilePath =
+              ToolFilePicker.saveImgFileToUserFolder(path!, fileName);
+          answer.addToList(newFilePath);
+        }
+        editAnswer(answer);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   addNewVideoPath(Answer answer) async {
     try {
       var filePath = await ToolFilePicker.choseVideoFile();
